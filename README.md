@@ -1,4 +1,4 @@
-# SoApp — minimal ETH wallet (Android)
+# MASH — minimal ETH wallet (Android)
 
 A deliberately small, self-custodial Android wallet for a custom ETH-based chain. It
 imports a BIP39 recovery phrase, derives a standard ETH account, points at a

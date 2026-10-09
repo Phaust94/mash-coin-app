@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "SoApp"
+rootProject.name = "MASH"
 include(":app")
