@@ -19,11 +19,13 @@
 - [x] 3.1 Implement a chain-config repository persisting JSON-RPC URL, coin alias, and chain ID with validation; verify unit tests for valid save plus rejection of a bad URL, empty alias, and non-numeric or non-positive chain ID
 - [ ] 3.2 Build the chain-config UI; verify manually that a valid configuration saves and invalid inputs are rejected with errors — *UI implemented; manual check pending a device/emulator*
 - [x] 3.3 Implement an Ethereum JSON-RPC client bound to the configured URL; verify with an `OkHttp MockWebServer` test that `eth_getBalance` and `eth_chainId` requests are sent to the configured endpoint
+- [ ] 3.4 Add an optional explorer URL to the chain configuration (blank allowed, non-blank must be http(s), values trimmed on save, old payloads without it still load); verify unit tests — *implemented + unit-tested; verify on device*
 
 ## 4. Balance view
 
 - [x] 4.1 Implement balance retrieval (`eth_getBalance`) and wei-to-coin formatting at 18 decimals with `BigDecimal`; verify unit tests for 0, a fractional amount, and exactly 1 coin
 - [ ] 4.2 Build the home screen showing the balance labeled with the coin alias, auto-fetch on open, a manual refresh action, and loading/error states; verify manually plus a ViewModel unit test with a fake repository (open triggers fetch, refresh updates the value, failure shows error and recovery clears it) — *ViewModel unit test passes; manual UI check pending a device/emulator*
+- [ ] 4.3 Add a History action above Chain settings that opens `<explorer>/address/<wallet address>` in an external browser and is disabled while no explorer URL is configured; verify unit tests for the URL building and ViewModel state — *implemented + unit-tested; verify on device*
 
 ## 5. Address book
 

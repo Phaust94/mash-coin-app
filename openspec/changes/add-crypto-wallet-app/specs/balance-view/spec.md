@@ -54,3 +54,20 @@ The system SHALL show an error state when a balance fetch fails and SHALL NOT cr
 
 - **WHEN** a later refresh succeeds after a failure
 - **THEN** the system replaces the error state with the newly fetched balance
+
+### Requirement: Open the address history in the block explorer
+
+The system SHALL provide a History action on the main interface, placed above the
+chain-settings action, that opens the wallet address page of the configured block
+explorer in an external browser at `<explorer>/address/<wallet address>`. The action
+SHALL be disabled while no explorer URL is configured.
+
+#### Scenario: History opens the explorer
+
+- **WHEN** an explorer URL is configured and the user triggers the History action
+- **THEN** the system opens `<explorer>/address/<wallet address>` in an external browser
+
+#### Scenario: History disabled without explorer
+
+- **WHEN** no explorer URL is configured
+- **THEN** the History action is shown disabled

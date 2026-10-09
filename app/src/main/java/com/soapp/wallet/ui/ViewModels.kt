@@ -13,6 +13,7 @@ import com.soapp.wallet.data.WalletRepository
 import com.soapp.wallet.model.AddressBookEntry
 import com.soapp.wallet.model.ChainConfig
 import com.soapp.wallet.model.Wallet
+import com.soapp.wallet.net.ExplorerLink
 import com.soapp.wallet.net.RpcClient
 import com.soapp.wallet.transfer.TransferResult
 import com.soapp.wallet.transfer.TransferService
@@ -89,7 +90,9 @@ data class HomeUiState(
     val balance: String? = null,
     val loading: Boolean = false,
     val error: String? = null,
-    val needsConfig: Boolean = false
+    val needsConfig: Boolean = false,
+    /** Explorer address-page URL, or null while no explorer URL is configured. */
+    val historyUrl: String? = null
 )
 
 class HomeViewModel(
@@ -120,6 +123,7 @@ class HomeViewModel(
                     address = wallet.address,
                     needsConfig = true,
                     loading = false,
+                    historyUrl = null,
                     error = "Configure a chain to view your balance"
                 )
             }
@@ -132,6 +136,7 @@ class HomeViewModel(
                 coinAlias = config.coinAlias,
                 needsConfig = false,
                 loading = true,
+                historyUrl = historyUrlFor(config, wallet.address),
                 error = null
             )
         }
@@ -149,6 +154,12 @@ class HomeViewModel(
                     }
                 }
         }
+    }
+
+    private fun historyUrlFor(config: ChainConfig, address: String): String? {
+        val base = config.explorerUrl.trim()
+        if (base.isEmpty()) return null
+        return ExplorerLink.addressUrl(base, address)
     }
 
     companion object {
@@ -170,6 +181,7 @@ data class ChainConfigUiState(
     val rpcUrl: String = "",
     val coinAlias: String = "",
     val chainId: String = "",
+    val explorerUrl: String = "",
     val error: String? = null,
     val saved: Boolean = false
 )
@@ -186,7 +198,8 @@ class ChainConfigViewModel(
             _state.value = ChainConfigUiState(
                 rpcUrl = config.rpcUrl,
                 coinAlias = config.coinAlias,
-                chainId = config.chainId.toString()
+                chainId = config.chainId.toString(),
+                explorerUrl = config.explorerUrl
             )
         }
     }
@@ -194,6 +207,7 @@ class ChainConfigViewModel(
     fun onRpcUrlChange(value: String) = _state.update { it.copy(rpcUrl = value, error = null, saved = false) }
     fun onCoinAliasChange(value: String) = _state.update { it.copy(coinAlias = value, error = null, saved = false) }
     fun onChainIdChange(value: String) = _state.update { it.copy(chainId = value, error = null, saved = false) }
+    fun onExplorerUrlChange(value: String) = _state.update { it.copy(explorerUrl = value, error = null, saved = false) }
 
     fun save() {
         val s = _state.value
@@ -202,7 +216,12 @@ class ChainConfigViewModel(
             _state.update { it.copy(error = "Enter a positive numeric chain ID", saved = false) }
             return
         }
-        val config = ChainConfig(rpcUrl = s.rpcUrl.trim(), coinAlias = s.coinAlias.trim(), chainId = chainId)
+        val config = ChainConfig(
+            rpcUrl = s.rpcUrl.trim(),
+            coinAlias = s.coinAlias.trim(),
+            chainId = chainId,
+            explorerUrl = s.explorerUrl.trim()
+        )
         chainConfigRepository.save(config)
             .onSuccess { _state.update { it.copy(error = null, saved = true) } }
             .onFailure { e ->

@@ -39,7 +39,7 @@ class HomeViewModelTest {
         Dispatchers.resetMain()
     }
 
-    private fun repositories(): Pair<WalletRepository, ChainConfigRepository> {
+    private fun repositories(explorerUrl: String = ""): Pair<WalletRepository, ChainConfigRepository> {
         val store = InMemoryKeyValueStore()
         val walletRepository = WalletRepository(store).apply {
             save(
@@ -50,7 +50,7 @@ class HomeViewModelTest {
             )
         }
         val chainConfigRepository = ChainConfigRepository(store).apply {
-            save(ChainConfig("http://localhost:8545", "ETH", 1337L))
+            save(ChainConfig("http://localhost:8545", "ETH", 1337L, explorerUrl))
         }
         return walletRepository to chainConfigRepository
     }
@@ -88,6 +88,31 @@ class HomeViewModelTest {
         assertEquals(2, fake.balanceCalls)
     }
 
+    @Test
+    fun `history url is null without an explorer url`() = runTest(dispatcher) {
+        val (walletRepository, chainConfigRepository) = repositories()
+        val fake = FakeRpcClient(balance = oneEther)
+
+        val viewModel = HomeViewModel(walletRepository, chainConfigRepository, { fake }, dispatcher)
+        advanceUntilIdle()
+
+        assertNull(viewModel.state.value.historyUrl)
+    }
+
+    @Test
+    fun `history url points at the explorer address page`() = runTest(dispatcher) {
+        val (walletRepository, chainConfigRepository) =
+            repositories(explorerUrl = "https://explorer.example/")
+        val fake = FakeRpcClient(balance = oneEther)
+
+        val viewModel = HomeViewModel(walletRepository, chainConfigRepository, { fake }, dispatcher)
+        advanceUntilIdle()
+
+        assertEquals(
+            "https://explorer.example/address/0xf39fd6e51aad88f6f4ce6ab8827279cfffb92266",
+            viewModel.state.value.historyUrl
+        )
+    }
     @Test
     fun `failure shows an error and recovery clears it`() = runTest(dispatcher) {
         val (walletRepository, chainConfigRepository) = repositories()

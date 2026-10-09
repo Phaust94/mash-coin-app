@@ -16,7 +16,12 @@ class ChainConfigRepository(
     fun save(config: ChainConfig): Result<Unit> {
         val error = validate(config)
             ?: return runCatching {
-                store.putString(KEY, json.encodeToString(ChainConfig.serializer(), config))
+                val clean = config.copy(
+                    rpcUrl = config.rpcUrl.trim(),
+                    coinAlias = config.coinAlias.trim(),
+                    explorerUrl = config.explorerUrl.trim()
+                )
+                store.putString(KEY, json.encodeToString(ChainConfig.serializer(), clean))
             }
         return Result.failure(IllegalArgumentException(error))
     }
@@ -31,6 +36,10 @@ class ChainConfigRepository(
             if (!isValidHttpUrl(config.rpcUrl)) return "Enter a valid http(s) JSON-RPC URL"
             if (config.coinAlias.isBlank()) return "Enter a coin alias"
             if (config.chainId <= 0) return "Enter a positive numeric chain ID"
+            val explorer = config.explorerUrl.trim()
+            if (explorer.isNotEmpty() && !isValidHttpUrl(explorer)) {
+                return "Enter a valid http(s) explorer URL or leave it empty"
+            }
             return null
         }
 

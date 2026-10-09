@@ -27,9 +27,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import android.content.Intent
+import android.net.Uri
 import com.soapp.wallet.AppContainer
 import com.soapp.wallet.model.AddressBookEntry
 
@@ -161,6 +164,8 @@ private fun HomeScreen(
     onReimport: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+    val context = LocalContext.current
+    var historyFailed by remember { mutableStateOf(false) }
 
     // Re-fetch whenever the home screen opens (including after re-import or a
     // chain-config change while the ViewModel is still alive).
@@ -191,6 +196,20 @@ private fun HomeScreen(
         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
             Button(onClick = viewModel::refresh) { Text("Refresh") }
             Button(onClick = onSend, enabled = !state.needsConfig) { Text("Send coin") }
+        }
+        OutlinedButton(
+            onClick = {
+                val url = state.historyUrl ?: return@OutlinedButton
+                try {
+                    context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+                } catch (e: Exception) {
+                    historyFailed = true
+                }
+            },
+            enabled = state.historyUrl != null
+        ) { Text("History") }
+        if (historyFailed) {
+            Text("Could not open the explorer", color = MaterialTheme.colorScheme.error)
         }
         OutlinedButton(onClick = onConfig) { Text("Chain settings") }
         OutlinedButton(onClick = onAddressBook) { Text("Address book") }
@@ -321,6 +340,12 @@ private fun ChainConfigScreen(viewModel: ChainConfigViewModel, onBack: () -> Uni
             value = state.chainId,
             onValueChange = viewModel::onChainIdChange,
             label = { Text("Chain ID") },
+            modifier = Modifier.fillMaxWidth()
+        )
+        OutlinedTextField(
+            value = state.explorerUrl,
+            onValueChange = viewModel::onExplorerUrlChange,
+            label = { Text("Explorer URL (optional)") },
             modifier = Modifier.fillMaxWidth()
         )
         if (state.error != null) {

@@ -62,3 +62,21 @@ send operations.
 
 - **WHEN** no chain configuration is saved and the user attempts to view a balance or send
 - **THEN** the system prompts the user to configure the chain instead of performing the operation
+
+### Requirement: Configure the block explorer (optional)
+
+The system SHALL let the user set an optional block-explorer base URL as part of the chain
+configuration, SHALL persist it with the rest of the configuration, SHALL accept it blank
+(meaning no explorer is configured), and SHALL reject a non-blank value that is not a
+valid http(s) URL without saving.
+
+#### Scenario: Explorer URL saved
+
+- **WHEN** the user supplies a valid http(s) explorer URL, or leaves it blank, with an
+  otherwise valid configuration
+- **THEN** the system saves the configuration including the explorer URL
+
+#### Scenario: Invalid explorer URL rejected
+
+- **WHEN** the user supplies a non-blank explorer URL that is not a valid http(s) URL
+- **THEN** the system rejects it with an error and does not save the configuration

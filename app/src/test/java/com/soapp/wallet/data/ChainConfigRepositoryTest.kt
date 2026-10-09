@@ -47,4 +47,35 @@ class ChainConfigRepositoryTest {
         assertNotNull(ChainConfigRepository.validate(valid.copy(coinAlias = "")))
         assertNull(ChainConfigRepository.validate(valid))
     }
+
+    @Test
+    fun `blank explorer url is allowed`() {
+        val repo = ChainConfigRepository(InMemoryKeyValueStore())
+        assertTrue(repo.save(valid.copy(explorerUrl = "  ")).isSuccess)
+        assertEquals("", repo.load()?.explorerUrl)
+    }
+
+    @Test
+    fun `non-blank explorer url must be valid`() {
+        val repo = ChainConfigRepository(InMemoryKeyValueStore())
+        assertTrue(repo.save(valid.copy(explorerUrl = "https://explorer.example")).isSuccess)
+        assertEquals("https://explorer.example", repo.load()?.explorerUrl)
+
+        val bad = ChainConfigRepository(InMemoryKeyValueStore())
+        assertTrue(bad.save(valid.copy(explorerUrl = "ftp://nope")).isFailure)
+        assertNull(bad.load())
+    }
+
+    @Test
+    fun `payload saved before the explorer setting still loads`() {
+        val store = InMemoryKeyValueStore()
+        store.putString(
+            ChainConfigRepository.KEY,
+            """{"rpcUrl":"http://localhost:8545","coinAlias":"ETH","chainId":1337}"""
+        )
+
+        val loaded = ChainConfigRepository(store).load()
+        assertEquals(valid, loaded)
+        assertEquals("", loaded?.explorerUrl)
+    }
 }

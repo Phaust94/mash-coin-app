@@ -14,7 +14,9 @@ data class Wallet(
 data class ChainConfig(
     val rpcUrl: String,
     val coinAlias: String,
-    val chainId: Long
+    val chainId: Long,
+    /** Optional block-explorer base URL; blank means no explorer is configured. */
+    val explorerUrl: String = ""
 )
 
 /** A named recipient address saved in the phonebook. */
