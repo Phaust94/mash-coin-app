@@ -47,6 +47,15 @@ fun App(container: AppContainer) {
     var route by remember { mutableStateOf<Route>(if (hasWallet) Route.Home else Route.Import) }
     var importSession by remember { mutableStateOf(0) }
 
+    val sendViewModel: SendViewModel = viewModel(
+        factory = SendViewModel.factory(
+            container.walletRepository,
+            container.chainConfigRepository,
+            container.addressBookRepository,
+            container.rpcFactory
+        )
+    )
+
     when (route) {
         Route.Import -> WalletImportScreen(
             viewModel = viewModel(
@@ -71,14 +80,7 @@ fun App(container: AppContainer) {
         )
 
         Route.Send -> SendScreen(
-            viewModel = viewModel(
-                factory = SendViewModel.factory(
-                    container.walletRepository,
-                    container.chainConfigRepository,
-                    container.addressBookRepository,
-                    container.rpcFactory
-                )
-            ),
+            viewModel = sendViewModel,
             onBack = { route = Route.Home }
         )
 
@@ -86,7 +88,11 @@ fun App(container: AppContainer) {
             viewModel = viewModel(
                 factory = AddressBookViewModel.factory(container.addressBookRepository)
             ),
-            onBack = { route = Route.Home }
+            onBack = { route = Route.Home },
+            onSendTo = { entry ->
+                sendViewModel.onPick(entry)
+                route = Route.Send
+            }
         )
 
         Route.ChainConfig -> ChainConfigScreen(
@@ -196,6 +202,9 @@ private fun HomeScreen(
 private fun SendScreen(viewModel: SendViewModel, onBack: () -> Unit) {
     val state by viewModel.state.collectAsState()
 
+    // The ViewModel outlives this screen, so reload the book on every open.
+    LaunchedEffect(Unit) { viewModel.refresh() }
+
     Screen(title = "Send ${state.coinAlias}".trim()) {
         if (state.successHash != null) {
             Text("Transaction sent.")
@@ -241,7 +250,11 @@ private fun SendScreen(viewModel: SendViewModel, onBack: () -> Unit) {
 }
 
 @Composable
-private fun AddressBookScreen(viewModel: AddressBookViewModel, onBack: () -> Unit) {
+private fun AddressBookScreen(
+    viewModel: AddressBookViewModel,
+    onBack: () -> Unit,
+    onSendTo: (AddressBookEntry) -> Unit
+) {
     val state by viewModel.state.collectAsState()
 
     Screen(title = "Address book") {
@@ -276,6 +289,7 @@ private fun AddressBookScreen(viewModel: AddressBookViewModel, onBack: () -> Uni
                             Text(entry.name)
                             Text(text = entry.address, fontFamily = FontFamily.Monospace, style = MaterialTheme.typography.bodySmall)
                         }
+                        TextButton(onClick = { onSendTo(entry) }) { Text("Send") }
                         TextButton(onClick = { viewModel.remove(entry.address) }) { Text("Delete") }
                     }
                 }

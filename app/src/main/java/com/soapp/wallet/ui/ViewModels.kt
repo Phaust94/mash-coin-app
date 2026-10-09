@@ -299,14 +299,27 @@ class SendViewModel(
     val state: StateFlow<SendUiState> = _state.asStateFlow()
 
     init {
-        val alias = chainConfigRepository.load()?.coinAlias ?: ""
-        _state.value = SendUiState(coinAlias = alias, entries = addressBookRepository.list())
+        refresh()
     }
 
     fun onAmountChange(value: String) = _state.update { it.copy(amount = value, error = null) }
     fun onDestinationChange(value: String) = _state.update { it.copy(destination = value, error = null) }
     fun onPick(entry: AddressBookEntry) = _state.update { it.copy(destination = entry.address, error = null) }
     fun consumeSuccess() = _state.update { it.copy(successHash = null) }
+
+    /**
+     * Reloads the coin alias and the address book. Called every time the send
+     * flow opens, because this ViewModel outlives the screen and entries may
+     * have been added or renamed elsewhere. Typed amount/destination are kept.
+     */
+    fun refresh() {
+        _state.update {
+            it.copy(
+                coinAlias = chainConfigRepository.load()?.coinAlias ?: "",
+                entries = addressBookRepository.list()
+            )
+        }
+    }
 
     fun send() {
         val s = _state.value
