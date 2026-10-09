@@ -1,2 +1,16 @@
 .idea
 **.pyc
+
+# Python virtualenv
+.venv/
+__pycache__/
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+*.apk
+*.aab
+captures/
+.externalNativeBuild/
+.cxx/

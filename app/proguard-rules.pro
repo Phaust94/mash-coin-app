@@ -1,0 +1,16 @@
+# web3j + BouncyCastle keep rules (used by the release/R8 build).
+-keep class org.web3j.** { *; }
+-keep class org.bouncycastle.** { *; }
+-dontwarn org.web3j.**
+-dontwarn org.bouncycastle.**
+-dontwarn org.slf4j.**
+-dontwarn javax.annotation.**
+-dontwarn java.lang.SafeVarargs
+-dontwarn okhttp3.**
+-dontwarn okio.**
+-dontwarn com.fasterxml.jackson.**
+-dontwarn org.java_websocket.**
+-dontwarn com.google.errorprone.annotations.**
+-dontwarn groovy.**
+-dontwarn org.identityconnectors.**
+-dontwarn org.apache.tuweni.**
