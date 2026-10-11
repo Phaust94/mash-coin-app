@@ -5,3 +5,4 @@ Instructions on using the app:
 3. Click "Chain settings" and enter chain details. Then click "Save"
 
 That's it! You are ready to receive or send transactions using "Send coin" button.
+You can get your address by clicking the "Copy" button near your address
