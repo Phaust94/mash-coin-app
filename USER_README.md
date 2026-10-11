@@ -4,7 +4,7 @@ Instructions on using the app:
     
     **Important**: Save the phrase somewhere safe! This is your password that holds all your tokens! 
 2. Open the app, enter newly-generated passphrase and click "Import"
-3. Click "Chain settings" and enter chain details. Then click "Save"
+3. Click "Chain settings" and enter chain details. Then click "Save". Click "Back" to return to main app menu.
 
 That's it! You are ready to receive or send transactions using "Send coin" button.
 You can get your address by clicking the "Copy" button near your address
