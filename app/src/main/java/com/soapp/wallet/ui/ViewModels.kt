@@ -145,7 +145,7 @@ class HomeViewModel(
             runCatching { rpcFactory(config.rpcUrl).getBalance(wallet.address) }
                 .onSuccess { wei ->
                     _state.update {
-                        it.copy(loading = false, balance = WeiFormat.format(wei), error = null)
+                        it.copy(loading = false, balance = WeiFormat.formatDisplay(wei), error = null)
                     }
                 }
                 .onFailure { e ->
