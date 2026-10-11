@@ -10,9 +10,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ContentCopy
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
@@ -27,12 +31,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import android.content.Intent
 import android.net.Uri
+import android.widget.Toast
 import com.soapp.wallet.AppContainer
 import com.soapp.wallet.model.AddressBookEntry
 
@@ -165,6 +172,7 @@ private fun HomeScreen(
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
+    val clipboard = LocalClipboardManager.current
     var historyFailed by remember { mutableStateOf(false) }
 
     // Re-fetch whenever the home screen opens (including after re-import or a
@@ -173,11 +181,23 @@ private fun HomeScreen(
 
     Screen(title = "Wallet") {
         Text("Address", style = MaterialTheme.typography.labelMedium)
-        Text(
-            text = state.address.ifBlank { "-" },
-            fontFamily = FontFamily.Monospace,
-            style = MaterialTheme.typography.bodyMedium
-        )
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                text = state.address.ifBlank { "-" },
+                fontFamily = FontFamily.Monospace,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f)
+            )
+            IconButton(
+                onClick = {
+                    clipboard.setText(AnnotatedString(state.address))
+                    Toast.makeText(context, "Address copied", Toast.LENGTH_SHORT).show()
+                },
+                enabled = state.address.isNotBlank()
+            ) {
+                Icon(Icons.Default.ContentCopy, contentDescription = "Copy address")
+            }
+        }
 
         Spacer(Modifier.height(8.dp))
         Text("Balance", style = MaterialTheme.typography.labelMedium)

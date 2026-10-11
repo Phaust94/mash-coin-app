@@ -71,3 +71,13 @@ SHALL be disabled while no explorer URL is configured.
 
 - **WHEN** no explorer URL is configured
 - **THEN** the History action is shown disabled
+
+### Requirement: Copy the wallet address
+
+The system SHALL provide a copy action next to the displayed wallet address on the main
+interface that copies the address to the clipboard.
+
+#### Scenario: Address copied
+
+- **WHEN** the user triggers the copy action next to the address
+- **THEN** the wallet address is copied to the clipboard

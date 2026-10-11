@@ -26,6 +26,7 @@
 - [x] 4.1 Implement balance retrieval (`eth_getBalance`) and wei-to-coin formatting at 18 decimals with `BigDecimal`; verify unit tests for 0, a fractional amount, and exactly 1 coin
 - [ ] 4.2 Build the home screen showing the balance labeled with the coin alias, auto-fetch on open, a manual refresh action, and loading/error states; verify manually plus a ViewModel unit test with a fake repository (open triggers fetch, refresh updates the value, failure shows error and recovery clears it) — *ViewModel unit test passes; manual UI check pending a device/emulator*
 - [ ] 4.3 Add a History action above Chain settings that opens `<explorer>/address/<wallet address>` in an external browser and is disabled while no explorer URL is configured; verify unit tests for the URL building and ViewModel state — *implemented + unit-tested; verify on device*
+- [ ] 4.4 Add a copy-address icon button next to the wallet address on the home screen — *implemented; verify on device*
 
 ## 5. Address book
 
