@@ -1,12 +1,13 @@
-# syntax=docker/dockerfile:1
-
 # ---------- Build stage ----------
 FROM node:22-alpine AS build
 WORKDIR /app
 
 # Install dependencies first so this layer stays cached when source changes.
+# npm install (rather than npm ci) is used because Tailwind v4 ships
+# platform-specific optional packages that npm ci rejects as "missing"
+# when the lockfile was generated on a different OS/arch.
 COPY package.json package-lock.json ./
-RUN npm ci
+RUN npm install --no-audit --no-fund
 
 # Build the production bundle (tsc + vite build).
 COPY . .
