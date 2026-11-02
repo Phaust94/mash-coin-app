@@ -34,7 +34,7 @@ export const WalletView: React.FC<WalletViewProps> = ({ onNavigate }) => {
       setBalance({
         value: rawBalance.toString(),
         formatted: Number(ethers.formatEther(rawBalance)).toLocaleString(undefined, {
-          maximumFractionDigits: 4
+          maximumFractionDigits: 1
         }),
         unit: chainConfig.name
       });

@@ -62,6 +62,20 @@ describe('WalletView refresh', () => {
     );
   });
 
+  test('formats the balance with at most one decimal place', async () => {
+    const setBalance = vi.fn();
+    getBalance.mockResolvedValueOnce(1_234_567_890_000_000_000n);
+
+    mockStore(setBalance);
+    render(<WalletView onNavigate={vi.fn()} />);
+
+    await waitFor(() => expect(setBalance).toHaveBeenCalledTimes(1));
+
+    const balance = setBalance.mock.calls[0][0] as { formatted: string; unit: string };
+    expect(balance.formatted).toMatch(/^1[.,]2$/);
+    expect(balance.unit).toBe('ETH');
+  });
+
   test('shows an error instead of failing silently', async () => {
     const setBalance = vi.fn();
     getBalance.mockRejectedValueOnce(new Error('RPC down'));
