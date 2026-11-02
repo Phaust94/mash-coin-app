@@ -8,7 +8,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'prompt',
-      includeAssets: ['favicon.svg', 'icons.svg'],
+      includeAssets: ['favicon-32.png', 'favicon-16.png', 'apple-touch-icon.png', 'icons.svg'],
       devOptions: {
         enabled: true
       },
