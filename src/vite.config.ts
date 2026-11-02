@@ -7,14 +7,19 @@ export default defineConfig({
   plugins: [
     react(),
     VitePWA({
-      registerType: 'prompt',
-      includeAssets: ['favicon-32.png', 'favicon-16.png', 'apple-touch-icon.png', 'icons.svg'],
+      // Auto-update so a new service worker takes over immediately instead of
+      // leaving an old one (and old cached icons) in control.
+      registerType: 'autoUpdate',
+      includeAssets: ['favicon-32-v2.png', 'favicon-16-v2.png', 'apple-touch-icon-v2.png', 'icons.svg'],
       devOptions: {
         enabled: true
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff,woff2}'],
-        navigateFallback: 'index.html'
+        navigateFallback: 'index.html',
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true
       },
       manifest: {
         name: 'MASH Wallet',
@@ -26,19 +31,19 @@ export default defineConfig({
         orientation: 'portrait',
         icons: [
           {
-            src: 'icon-192.png',
+            src: 'icon-192-v2.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: 'icon-512.png',
+            src: 'icon-512-v2.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: 'icon-maskable-512.png',
+            src: 'icon-maskable-512-v2.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
